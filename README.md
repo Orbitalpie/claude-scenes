@@ -5,7 +5,7 @@ Four animated backdrop themes for the Claude desktop and mobile apps, switched w
 - **Mars at dusk:** rust-dark ground with ancient rocks, a dusty horizon glow, and a twilight sky whose stars slowly turn.
 - **Deep sea:** from the moonlit surface to the abyssal floor, with animals true to each depth that fade in and out: sardines, a turtle, a manta, lanternfish, an anglerfish, a vampire squid, a dumbo octopus and more. Now and then a kayaker paddles by overhead.
 - **Rainforest:** a misty Southeast Asian understorey with dappled light, drifting mist, insects in the leaf litter, gibbons, an orangutan, a hornbill, and a tiger that stalks a troop of macaques, pounces and misses.
-- **Blizzard:** a gloomy storm over a fog-bound pine forest. The snow rides swirling wind currents, easing to light flurries, then thickening into gusts, streaks and whiteouts.
+- **Blizzard:** a gloomy storm over a fog-bound pine forest. Snow falls at several depths while sheets of heavier snow sweep across on the wind. It eases to light flurries, then thickens into gusts, streaks and whiteouts.
 
 All four are dark themes, and only the backdrop moves. The animation is CSS only and pauses if your system asks for reduced motion.
 
