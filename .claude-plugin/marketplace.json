@@ -1,5 +1,5 @@
 {
   "name": "claude-scenes",
   "owner": { "name": "evillibrary" },
-  "plugins": [{ "name": "scenes", "source": "./", "description": "Animated backdrop scenes (Mars at dusk, deep sea, rainforest), switched with /scene." }]
+  "plugins": [{ "name": "scenes", "source": "./", "description": "Animated backdrop scenes (Mars at dusk, deep sea, rainforest, blizzard), switched with /scene." }]
 }

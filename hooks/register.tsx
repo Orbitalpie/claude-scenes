@@ -4,6 +4,7 @@ import { makeColors } from './make-colors.js'
 import { SCENE as MARS } from './scene-mars'
 import { SCENE as DEEP } from './scene-deep-sea'
 import { SCENE as RAIN } from './scene-rainforest'
+import { SCENE as SNOW } from './scene-blizzard'
 
 // All the looks in one mod, switched with /scene. The choice is kept in the
 // mod's store, so new sessions open on the last scene picked.
@@ -75,6 +76,20 @@ const LOOKS: Look[] = [
     '#050906',
     0.56,
   ),
+  look(
+    'blizzard',
+    'Blizzard',
+    SNOW,
+    'A gloomy blizzard in a fog-bound pine forest, framed by snow-plastered trees where a snowy owl now and then comes to rest',
+    { accent: '#86bfe0', danger: '#e0606a', success: '#6fbf8f', warning: '#e2b552', pro: '#a58be0' },
+    {
+      'surface-0': '#0b0e12', 'surface-1': '#0f1318', 'surface-2': '#13181e', 'surface-3': '#181e25',
+      'text-primary': '#e8eef3', 'text-secondary': '#c0cad3', 'text-muted': '#97a3ae',
+    },
+    '#080b0f',
+    // A lighter veil than the others, so more of the storm shows through.
+    0.38,
+  ),
 ]
 
 // Short names people may type.
@@ -82,6 +97,7 @@ const ALIASES: Record<string, string> = {
   mars: 'mars-dusk', dusk: 'mars-dusk', 'mars-dusk': 'mars-dusk',
   deep: 'deep-sea', sea: 'deep-sea', ocean: 'deep-sea', 'deep-sea': 'deep-sea',
   rainforest: 'rainforest', jungle: 'rainforest', forest: 'rainforest', rain: 'rainforest',
+  blizzard: 'blizzard', snow: 'blizzard', storm: 'blizzard', winter: 'blizzard', owl: 'blizzard',
 }
 const DEFAULT = 'rainforest'
 const find = (name: unknown) => LOOKS.find(l => l.name === name)
@@ -90,8 +106,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'scene',
-      description: 'Switch the backdrop scene: mars, deep or rainforest (no name lists them)',
-      argumentHint: '[mars|deep|rainforest|next]',
+      description: 'Switch the backdrop scene: mars, deep, rainforest or blizzard (no name lists them)',
+      argumentHint: '[mars|deep|rainforest|blizzard|next]',
     })
     const chosen = find(await $.store.get('scene')) ?? find(DEFAULT)!
     const unpainted = chosen.problems.find(line => line.startsWith("Desktop won't paint"))
@@ -122,7 +138,7 @@ export const register: Register = on => {
         : find(ALIASES[word])
 
     if (target === undefined) {
-      return { text: `No scene called "${word}". Try mars, deep or rainforest.\n${list}` }
+      return { text: `No scene called "${word}". Try mars, deep, rainforest or blizzard.\n${list}` }
     }
     await $.store.set('scene', target.name)
     const set = await $.theme.set(target.look)
