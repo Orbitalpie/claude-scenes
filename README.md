@@ -39,3 +39,17 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 | `/scene next` | Moves to the next scene |
 
 The session you type it in changes at once. New sessions open on the last scene you picked.
+
+## Make your own scene
+
+Every scene is drawn by a small generator script, and this repo comes with a Claude Code skill that knows how to write one.
+
+1. Fork this repo and clone your fork.
+2. Open the folder in Claude Code, in the desktop app or with `claude` in a terminal, and describe the scene you want. For example: "Add a scene of a lighthouse on a stormy coast at night, with a slow sweeping beam." The `scene-mods` skill loads when the task calls for it, or type `/scene-mods` to start with it.
+3. Claude writes a design brief and a generator under `generators/<name>/`, builds the scene with `node build.mjs`, and checks it against the app's limits. It then helps you try it out in your app before you publish it to your fork.
+
+The four scenes here are the worked examples. Their generators and design notes are in `generators/`. To change an existing scene, ask for the change; Claude edits its generator, never the generated file.
+
+**Two limits matter more than anything else.** The desktop app stops a scene's animation if it is much over 110 000 characters, or if anything in it repeats faster than about once a second. `node build.mjs` checks both.
+
+To publish your own copy: change `owner` and `name` in `.claude-plugin/marketplace.json`, and the install lines above, to your GitHub name and repo.
