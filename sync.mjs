@@ -6,7 +6,6 @@ for (const [from, to] of [
   ['../mars-dusk/hooks/scene.ts', 'hooks/scene-mars.ts'],
   ['../deep-sea/hooks/scene.ts', 'hooks/scene-deep-sea.ts'],
   ['../rainforest/hooks/scene.ts', 'hooks/scene-rainforest.ts'],
-  ['../blizzard/hooks/scene.ts', 'hooks/scene-blizzard.ts'],
 ]) {
   copyFileSync(new URL(from, import.meta.url), new URL(to, import.meta.url))
   console.log(`${from} -> ${to}`)
