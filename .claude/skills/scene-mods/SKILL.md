@@ -26,6 +26,9 @@ The generators are the worked examples. Read one that is close to what you want 
 - **`mars-dusk`:** a calm sky and land.
 - **`rainforest`:** many creatures, each on its own cycle.
 - **`blizzard`:** weather in layers, plus one creature that acts out a story on a long timeline.
+- **`library`:** light baked into the drawing, and a jointed creature whose arms are posed by inverse kinematics from where its hands must be. Every second visit it is drawn mirrored, on the other side of the text.
+
+`hooks/register.tsx` and `README.md` have Windows (CRLF) line endings. Keep them: a script that matches `\n` misses, and `sed -i` in Git Bash quietly turns them into LF.
 
 ## Making a scene
 
@@ -59,12 +62,15 @@ The engine accepts scenes up to 131 072 characters, but the desktop app is stric
 - **A creature's story** (arrive, act, leave): put it on one long cycle of a few minutes. Write each moment as a keyframe at `seconds / cycle * 100%`. Pass the start delay in a custom property such as `--d`, so copies can take turns.
 - **Big gestures:** a wingbeat is one slow keyframed stroke of a second or more, not a fast infinite loop.
 - **Parts that belong to one pose:** fade them in and out with that pose. For example, folded wings shouldn't show while the wings are spread.
+- **Jointed creatures:** nest one group per joint, each with a fixed `transform` attribute (where the joint sits) wrapping an inner group whose CSS animates `rotate`. A CSS `transform` replaces the element's own `transform` attribute, so never put both on one element. Work out the angles in the generator: decide where the hands or feet must be at each moment, and solve the two-bone inverse kinematics for each limb. The `library` generator has an `ik()` to copy.
+- **A visit on both sides:** rather than a second creature, wrap the one creature in a group that switches to `translate(2000px,0) scale(-1,1)` while it is out of sight. The joints' keyframes then serve both visits.
 
 ## Making room
 
 - **Thin by count, not by chance.** Still make every random draw, then skip every second or third item. Then the rest of the picture keeps its place, because the random numbers come from one shared sequence: one extra or missing draw reshuffles everything after it.
 - **Write paths as relative steps** (`l`, `q`). They're shorter than absolute coordinates and draw the same shape.
-- **Reuse static shapes** with `<symbol>` and `<use>`. Keep animated parts inline, so their CSS and custom properties reach them.
+- **Reuse static shapes** with `<symbol>` and `<use>`. Keep animated parts inline, so their CSS and custom properties reach them. A limb's drawing doesn't move inside its own joint group, so it can be a symbol even though the joint animates: the `library` orangutan's arms and legs are each drawn once and used twice.
+- **Bake light in.** For lamplight or shade that doesn't move, work out each shape's light level when the scene is built and round it to a few levels. Then every colour at each level shares one `<path>`. That is far smaller than drawing a light overlay, and costs the app nothing to animate.
 - **Give new art its own seed, then restore the old one**, so adding something doesn't move what's already there:
 
   ```js
@@ -76,7 +82,8 @@ The engine accepts scenes up to 131 072 characters, but the desktop app is stric
 
 ## Drawing rules
 
-- **Give each overlapping shape its own `<path>`.** Overlapping outlines in one path can cancel each other's fill and show what's behind. Layer them in order: twigs, then branches, then the trunk.
+- **Give each overlapping shape its own `<path>`.** Overlapping outlines in one path can cancel each other's fill and show what's behind. Layer them in order: twigs, then branches, then the trunk. Many small shapes all wound the same way, such as locks of hair, can share a path, but not a path with the outline they hang from.
+- **Clip fine detail to its outline.** Strands of hair or fur that run past a silhouette make it look spiky. Draw them inside a `<clipPath>` that `<use>`s the outline, so the shape isn't repeated.
 - **Draw soft edges, like snow, moss and mist, as curves through midpoints**, and taper each patch to nothing at both ends. Straight segments with blunt ends look blocky.
 - **Shade with `gradientUnits="userSpaceOnUse"`** when separate shapes must match, like a face and the lids over its eyes.
 - **Keep the subject away from the middle and the foot**, where the text and the message box sit. A 16:10 window shows roughly x 200 to 1800 of the 2000-wide view, and a wide window crops the top and bottom.
@@ -102,9 +109,17 @@ Only the app shows the freezes, so test there. Add one thing at a time, and watc
 1. **Make sure only one mod draws the backdrop.** Two backdrop mods fight over the screen. Turn off any installed copy of `scenes` (or another theme mod) while you test. Use `/plugin`, or `enabledPlugins` in `~/.claude/settings.json`. Ask the person first, and turn it back on afterwards.
 2. **Run your working copy.**
    - **In a terminal:** start Claude Code with `claude --plugin-dir <this repo>`.
-   - **In the desktop app:** the `plugin-authoring` skill's hot-reload folder reloads a mod each time you save. Copy `hooks/` and `.claude-plugin/plugin.json` into it.
-   - **Either way:** restart the app for the first load.
-3. **If it freezes, change one thing at a time to find out why.**
+   - **In the desktop app:** load the `plugin-authoring` skill, which names a hot-reload folder for the session. In it, make a small test mod, for example `library-test/`, holding:
+     - `.claude-plugin/plugin.json`;
+     - `hooks/hooks.json`;
+     - a copy of `hooks/make-colors.*`;
+     - `hooks/scene.ts` (a copy of the scene);
+     - a short `hooks/register.tsx` that calls `$.theme.set` with `backdrop: { scene: '<name>-test', glass }` at `session.start`, and draws the scene in a `ui.render` hook on `Backdrop`, as `register.tsx` here does.
+
+     The person is asked once to turn the session's mods on. After that the mod loads, and reloads after each change, when your turn ends. In November 2026 no app restart was needed.
+3. **Bring the parts in one stage at a time.** Write the test copy of the scene from the built one with a CSS rule that hides the parts not yet tested, such as `.ape,.magic{display:none}`, put just before `@media`. Start with the still scene and its lightest motion, then add one moving part per stage, and ask the person to watch each stage for about three minutes. A small script that writes stage N keeps this quick.
+4. **Afterwards,** delete the test mod and turn the installed scenes back on.
+5. **If it freezes, change one thing at a time to find out why.**
    - Hide a part with `display="none"`: the scene is the same size but draws less. That separates size from drawing cost.
    - Stop a single animation. That shows whether one motion is the trigger.
    - Draw an older scene that used to run through the same mod. That shows whether the app has changed.

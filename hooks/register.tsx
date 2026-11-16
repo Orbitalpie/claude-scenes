@@ -5,6 +5,7 @@ import { SCENE as MARS } from './scene-mars'
 import { SCENE as DEEP } from './scene-deep-sea'
 import { SCENE as RAIN } from './scene-rainforest'
 import { SCENE as SNOW } from './scene-blizzard'
+import { SCENE as BOOKS } from './scene-library'
 
 // All the looks in one mod, switched with /scene. The choice is kept in the
 // mod's store, so new sessions open on the last scene picked.
@@ -27,11 +28,12 @@ function look(
   anchors: { 'surface-0': string; 'text-primary': string } & Record<string, string>,
   tint: string,
   opacity: number,
+  blur = 10,
 ): Look {
   const { theme, problems } = makeColors({ label, only: 'dark', roles, dark: { gray: { anchors } } })
   // A lighter frost than before (blur 18 -> 10) so more of the scene shows
   // through the middle panel.
-  const set: ThemeSetArgs = { colors: theme, backdrop: { scene: name, glass: { blur: 10, tint, opacity } } }
+  const set: ThemeSetArgs = { colors: theme, backdrop: { scene: name, glass: { blur, tint, opacity } } }
 
   return { name, label, svg, alt, look: set, problems }
 }
@@ -90,6 +92,21 @@ const LOOKS: Look[] = [
     // A lighter veil than the others, so more of the storm shows through.
     0.38,
   ),
+  look(
+    'library',
+    'Library',
+    BOOKS,
+    'A dim, lamplit wall of bookshelves where books glow with runes or vanish, red eyes watch from a gap, and an orangutan climbs down to read',
+    { accent: '#d9a54a', danger: '#d8504a', success: '#7fae6a', warning: '#e0a83a', pro: '#a98be0' },
+    {
+      'surface-0': '#0d0805', 'surface-1': '#130c08', 'surface-2': '#19110b', 'surface-3': '#20160f',
+      'text-primary': '#f3e9dc', 'text-secondary': '#d4c3ad', 'text-muted': '#ab9883',
+    },
+    '#0c0704',
+    0.5,
+    // Half the usual frost, so the shelves show through behind the text.
+    5,
+  ),
 ]
 
 // Short names people may type.
@@ -98,6 +115,7 @@ const ALIASES: Record<string, string> = {
   deep: 'deep-sea', sea: 'deep-sea', ocean: 'deep-sea', 'deep-sea': 'deep-sea',
   rainforest: 'rainforest', jungle: 'rainforest', forest: 'rainforest', rain: 'rainforest',
   blizzard: 'blizzard', snow: 'blizzard', storm: 'blizzard', winter: 'blizzard', owl: 'blizzard',
+  library: 'library', books: 'library', stacks: 'library', librarian: 'library', ook: 'library',
 }
 const DEFAULT = 'rainforest'
 const find = (name: unknown) => LOOKS.find(l => l.name === name)
@@ -106,8 +124,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'scene',
-      description: 'Switch the backdrop scene: mars, deep, rainforest or blizzard (no name lists them)',
-      argumentHint: '[mars|deep|rainforest|blizzard|next]',
+      description: 'Switch the backdrop scene: mars, deep, rainforest, blizzard or library (no name lists them)',
+      argumentHint: '[mars|deep|rainforest|blizzard|library|next]',
     })
     const chosen = find(await $.store.get('scene')) ?? find(DEFAULT)!
     const unpainted = chosen.problems.find(line => line.startsWith("Desktop won't paint"))
@@ -138,7 +156,7 @@ export const register: Register = on => {
         : find(ALIASES[word])
 
     if (target === undefined) {
-      return { text: `No scene called "${word}". Try mars, deep, rainforest or blizzard.\n${list}` }
+      return { text: `No scene called "${word}". Try mars, deep, rainforest, blizzard or library.\n${list}` }
     }
     await $.store.set('scene', target.name)
     const set = await $.theme.set(target.look)
