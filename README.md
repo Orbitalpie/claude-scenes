@@ -1,6 +1,6 @@
 # Scenes for Claude Code
 
-Five animated backdrop themes for the Claude desktop and mobile apps, switched with one slash command.
+Ten animated backdrop themes for the Claude desktop and mobile apps, switched with one slash command.
 
 - **Mars at dusk:** rust-dark ground with ancient rocks, a dusty horizon glow, and a twilight sky whose stars slowly turn.
 - **Deep sea:** from the moonlit surface to the abyssal floor, with animals true to each depth that fade in and out: sardines, a turtle, a manta, lanternfish, an anglerfish, a vampire squid, a dumbo octopus and more. Now and then a kayaker paddles by overhead.
@@ -9,6 +9,18 @@ Five animated backdrop themes for the Claude desktop and mobile apps, switched w
 - **Library:** a dim, lamplit wall of old books running floor to ceiling. Now and then a book glows and a rune rises on its spine; another book vanishes and returns; a small pair of red eyes watches from a gap on the bottom shelf. Every eighty seconds an orangutan, seen only from behind, climbs down the shelves on one side of the text or the other, takes out a book, reads it, puts it back and moves off along the shelf.
 
 All five are dark themes, and only the backdrop moves. The animation is CSS only and pauses if your system asks for reduced motion.
+
+### Nebulae traced from space-telescope photos
+
+Five more scenes, each traced from a real Hubble photograph (NASA, ESA and the credits below), with the stars twinkling over a black sky:
+
+- **Ring Nebula:** the Ring Nebula (M57) in Lyra, the glowing shell a dying star has blown off, hangs in the upper left of a black star field. It is traced into brush strokes from the 2013 Hubble image of the Ring ([NASA page](https://science.nasa.gov/image-detail/ring-nebula-full_jpg/); image credit: NASA, ESA and the Hubble Heritage (STScI/AURA)-ESA/Hubble Collaboration). Stars twinkle all round it, the brightest with crosses of light, and its white dwarf shines with a cross at its heart. A tiny edge-on galaxy sits beside it, a comet crosses the upper right every few minutes, and a shooting star falls now and then.
+- **Crab Nebula:** the Crab Nebula (M1), the wreck of a star that exploded in 1054, glows on the right of a black star field. It is traced into brush strokes from the Hubble mosaic of the Crab ([NASA page](https://science.nasa.gov/asset/hubble/a-giant-hubble-mosaic-of-the-crab-nebula/); image credit: NASA, ESA, J. Hester and A. Loll, Arizona State University). Stars twinkle all round it, the brightest with crosses of light, its pulsar shines with a cross at the heart, far galaxies hang in the dark and a shooting star falls now and then.
+- **Twin Jet Nebula:** the Twin Jet Nebula (PN M2-9) in Ophiuchus, a dying star's two great lobes and jets, stretches across the upper right of a black star field, tilted as in the older 1997 Hubble picture. It is traced into brush strokes from the 2015 Hubble image of it ([ESA/Hubble page](https://esahubble.org/images/heic1518a/); image credit: ESA/Hubble & NASA, Acknowledgement: Judy Schmidt; [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). Stars twinkle all over the sky, the brightest with crosses of light, the star at its heart shines with a cross, a pair of distant stars on the left circle each other slowly, far galaxies hang in the dark and a shooting star falls now and then.
+- **Hourglass Nebula:** the Hourglass Nebula (MyCn 18) in Musca, two great shells of gas around a dying star with a glowing eye at its waist, stands upright on the left of a black star field. It is traced into brush strokes from the Hubble image of it ([NASA page](https://science.nasa.gov/asset/hubble/planetary-nebula-mycn18-an-hourglass-pattern-around-a-dying-star/); image credit: Raghvendra Sahai and John Trauger (JPL), the WFPC2 science team, and NASA; public domain; the photo's orange is turned pink-red). Stars twinkle all over the sky, the brightest with crosses of light, its white dwarf shines with a cross, a comet crosses the upper right every few minutes, far galaxies hang in the dark and a shooting star falls now and then.
+- **Helix Nebula:** the Helix Nebula (NGC 7293) in Aquarius, the glowing shell of a dying star seen face-on like a great eye, glows on the right of a black star field: a red outer ring, a gold and teal inner ring and a blue-green centre, with a few dozen tiny comet-shaped knots of gas round its inner rim. It is traced into brush strokes from the Hubble image of it ([NASA page](https://science.nasa.gov/asset/hubble/iridescent-glory-of-nearby-helix-nebula/); image credit: NASA, NOAO, ESA, the Hubble Helix Nebula Team, M. Meixner (STScI), and T.A. Rector (NRAO); public domain). Stars twinkle all over the sky, the brightest with crosses of light, its faint white dwarf shines with a cross, a comet crosses the upper left every few minutes, a far spiral galaxy and other galaxies hang in the dark and a shooting star falls now and then.
+
+**How they move.** Each nebula is one completely still drawing of tens of thousands of fine brush strokes, written as flowing lines that follow the grain of the photo. The desktop app freezes if anything in a drawing that detailed changes, so all the motion (the twinkling stars, crosses, comet, circling stars and shooting stars) is played over it on the graphics card by a small shader. On the phone, or if your system asks for reduced motion, the still drawing shows alone.
 
 ## Install
 
@@ -38,6 +50,11 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 | `/scene rainforest` | Rainforest |
 | `/scene blizzard` | Blizzard |
 | `/scene library` | Library |
+| `/scene ring` | Ring Nebula (also `ring-nebula`, `m57`, `lyra`) |
+| `/scene crab` | Crab Nebula (also `crab-nebula`, `m1`, `pulsar`, `supernova`) |
+| `/scene twinjet` | Twin Jet Nebula (also `twin-jet`, `butterfly`, `m2-9`, `jets`) |
+| `/scene hourglass` | Hourglass Nebula (also `mycn18`, `mycn-18`, `eye`) |
+| `/scene helix` | Helix Nebula (also `helix-nebula`, `ngc7293`, `eye-of-god`) |
 | `/scene next` | Moves to the next scene |
 
 The session you type it in changes at once. New sessions open on the last scene you picked.
@@ -52,6 +69,8 @@ Every scene is drawn by a small generator script, and this repo comes with a Cla
 
 The five scenes here are the worked examples. Their generators and design notes are in `generators/`. To change an existing scene, ask for the change; Claude edits its generator, never the generated file.
 
-**Two limits matter more than anything else.** The desktop app stops a scene's animation if it is much over 110 000 characters, or if anything in it repeats faster than about once a second. `node build.mjs` checks both.
+The nebulae are built differently from the five above: a photo is shrunk to a small grid of colours (`generators/<name>/make-picture.cjs`, which needs `npm i -D playwright-core` and a Chromium-based browser, and the full-size photo in `sources/`) and traced at build time into brush strokes by the shared code in `generators/lib/`. Look at `generators/ring` first.
+
+**Two limits matter more than anything else.** The desktop app stops a scene's animation if it is much over 110 000 characters, or if anything in it repeats faster than about once a second. `node build.mjs` checks both. (A nebula is a completely still drawing with its motion in a shader, and may be 125 000 characters.)
 
 To publish your own copy: change `owner` and `name` in `.claude-plugin/marketplace.json`, and the install lines above, to your GitHub name and repo.

@@ -56,6 +56,15 @@ The engine accepts scenes up to 131 072 characters, but the desktop app is stric
 
 `build.mjs` runs `scripts/check-scene.mjs`, which catches both. The limits may change as the app changes. If a scene freezes within them, find the cause (see Testing) and update this section.
 
+## Nebula scenes traced from photographs
+
+`ring`, `crab`, `twinjet`, `hourglass` and `helix` are built from real space-telescope photos, and differ from the animated scenes above:
+
+- **No embedded pictures.** The desktop app draws no `<image>` (not even base64). A photo is shrunk to a grid of colours at build time (`generators/lib/make-pixels.cjs`, run from each scene's `make-picture.cjs`, from the full-size original in the git-ignored `sources/`) and traced into brush strokes by `generators/lib/trace.mjs`. Read `generators/ring/gen-scene.mjs` for the knobs.
+- **A completely still drawing, a shader for all the motion.** In November 2026 the app froze whenever anything in the SVG changed near thousands of traced strokes (a drift, a breathing glow, a pulsing star, stars twinkling nearby, even a second see-through SVG on top). A `Shader` over a still `Svg` ran fine, so `generators/lib/shader.mjs` writes `hooks/shader-<name>.ts` (twinkling stars, cross stars, comet, shooting stars) and `hooks/register.tsx` draws `<Shader module="./shader-<name>.ts"><Svg .../></Shader>`. On the phone, or under Reduce Motion, the still drawing shows alone.
+- **A bigger size limit.** The 110 000-character limit above was found with animated scenes. A still drawing with a `shader-<name>.ts` beside it may be 125 000 characters (the app refuses any single Svg over 131 072); `check-scene.mjs` applies that, and fails such a scene if its SVG animates.
+- `generators/lib` is shared code, not a scene: `build.mjs` skips it.
+
 ## Motion that reads well and stays within the limits
 
 - **Weather and light:** give each layer its own breathing cycle, each a different prime number of seconds long. The cycles rarely line up, so the scene keeps changing.
