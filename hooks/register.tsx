@@ -6,6 +6,11 @@ import { SCENE as DEEP } from './scene-deep-sea'
 import { SCENE as RAIN } from './scene-rainforest'
 import { SCENE as SNOW } from './scene-blizzard'
 import { SCENE as BOOKS } from './scene-library'
+import { SCENE as CRAB } from './scene-crab'
+import { SCENE as HELIX } from './scene-helix'
+import { SCENE as HOURGLASS } from './scene-hourglass'
+import { SCENE as RING } from './scene-ring'
+import { SCENE as TWINJET } from './scene-twinjet'
 
 // All the looks in one mod, switched with /scene. The choice is kept in the
 // mod's store, so new sessions open on the last scene picked.
@@ -107,6 +112,58 @@ const LOOKS: Look[] = [
     // Half the usual frost, so the shelves show through behind the text.
     5,
   ),
+  look(
+    'ring',
+    'Ring Nebula',
+    RING,
+    'The Ring Nebula, traced from a Hubble photograph, in a black star field with twinkling stars, a small edge-on galaxy, a passing comet and a shooting star now and then',
+    { accent: '#5fc8e0', danger: '#e0566a', success: '#6fc79a', warning: '#e2b052', pro: '#c8553d' },
+    {
+      'surface-0': '#04060c', 'surface-1': '#080b15', 'surface-2': '#0c101d', 'surface-3': '#111626',
+      'text-primary': '#eaf1f6', 'text-secondary': '#c0ccd8', 'text-muted': '#96a3b4',
+    },
+    '#000000',
+    0.5,
+  ),
+  look(
+    'twinjet',
+    'Twin Jet Nebula',
+    TWINJET,
+    'The Twin Jet Nebula, traced from a Hubble photograph, glowing across the upper right of a black star field with twinkling stars, a pair of distant stars circling each other on the left, and a shooting star now and then',
+    { accent: '#7d8cff', danger: '#e0566a', success: '#6fc79a', warning: '#e2b052', pro: '#e07a4a' },
+    {
+      'surface-0': '#04050d', 'surface-1': '#080a16', 'surface-2': '#0c0f1f', 'surface-3': '#111428',
+      'text-primary': '#eceef8', 'text-secondary': '#c2c8e0', 'text-muted': '#989fba',
+    },
+    '#000000',
+    0.5,
+  ),
+  look(
+    'hourglass',
+    'Hourglass Nebula',
+    HOURGLASS,
+    'The Hourglass Nebula, traced from a Hubble photograph, standing upright on the left of a black star field with an eye of teal light at its waist, twinkling stars, a passing comet and a shooting star now and then',
+    { accent: '#e0607a', danger: '#e0566a', success: '#6fc79a', warning: '#e2b052', pro: '#5fb8c8' },
+    {
+      'surface-0': '#05050d', 'surface-1': '#090a16', 'surface-2': '#0d0e1f', 'surface-3': '#121328',
+      'text-primary': '#eef0f8', 'text-secondary': '#c6cadf', 'text-muted': '#9ca0b9',
+    },
+    '#000000',
+    0.5,
+  ),
+  look(
+    'helix',
+    'Helix Nebula',
+    HELIX,
+    'The Helix Nebula, traced from a Hubble photograph, glowing on the right of a black star field like a great eye with a red ring, a gold and teal inner ring and a blue-green centre, with twinkling stars, a passing comet and a shooting star now and then',
+    { accent: '#e0b04a', danger: '#e0566a', success: '#6fc79a', warning: '#e2b052', pro: '#4fb0b0' },
+    {
+      'surface-0': '#04060d', 'surface-1': '#080b16', 'surface-2': '#0c101f', 'surface-3': '#111528',
+      'text-primary': '#eef0f8', 'text-secondary': '#c6cadf', 'text-muted': '#9ca0b9',
+    },
+    '#000000',
+    0.5,
+  ),
 ]
 
 // Short names people may type.
@@ -116,6 +173,11 @@ const ALIASES: Record<string, string> = {
   rainforest: 'rainforest', jungle: 'rainforest', forest: 'rainforest', rain: 'rainforest',
   blizzard: 'blizzard', snow: 'blizzard', storm: 'blizzard', winter: 'blizzard', owl: 'blizzard',
   library: 'library', books: 'library', stacks: 'library', librarian: 'library', ook: 'library',
+  crab: 'crab', 'crab-nebula': 'crab', m1: 'crab', pulsar: 'crab', supernova: 'crab',
+  ring: 'ring', 'ring-nebula': 'ring', m57: 'ring', lyra: 'ring',
+  twinjet: 'twinjet', 'twin-jet': 'twinjet', butterfly: 'twinjet', 'm2-9': 'twinjet', jets: 'twinjet',
+  hourglass: 'hourglass', mycn18: 'hourglass', 'mycn-18': 'hourglass', eye: 'hourglass',
+  helix: 'helix', 'helix-nebula': 'helix', ngc7293: 'helix', 'eye-of-god': 'helix',
 }
 const DEFAULT = 'rainforest'
 const find = (name: unknown) => LOOKS.find(l => l.name === name)
@@ -124,8 +186,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'scene',
-      description: 'Switch the backdrop scene: mars, deep, rainforest, blizzard or library (no name lists them)',
-      argumentHint: '[mars|deep|rainforest|blizzard|library|next]',
+      description: 'Switch the backdrop scene: mars, deep, rainforest, blizzard, library, ring, crab, twinjet, hourglass or helix (no name lists them)',
+      argumentHint: '[mars|deep|rainforest|blizzard|library|ring|crab|twinjet|hourglass|helix|next]',
     })
     const chosen = find(await $.store.get('scene')) ?? find(DEFAULT)!
     const unpainted = chosen.problems.find(line => line.startsWith("Desktop won't paint"))
@@ -156,7 +218,7 @@ export const register: Register = on => {
         : find(ALIASES[word])
 
     if (target === undefined) {
-      return { text: `No scene called "${word}". Try mars, deep, rainforest, blizzard or library.\n${list}` }
+      return { text: `No scene called "${word}". Try mars, deep, rainforest, blizzard, library, ring, crab, twinjet, hourglass or helix.\n${list}` }
     }
     await $.store.set('scene', target.name)
     const set = await $.theme.set(target.look)
@@ -177,8 +239,48 @@ export const register: Register = on => {
     if (chosen === undefined) {
       return next(e)
     }
-    const { Svg } = $.ui.resolve(e)
+    const { Shader, Svg } = $.ui.resolve(e)
 
+    // The nebula scenes are one completely still drawing, with all their motion
+    // played over it on the GPU by a shader (generators/lib/shader.mjs). Any
+    // change in the SVG near their ~9,000 traced strokes froze the app. On the
+    // phone or under Reduce Motion the still drawing shows alone. A Shader's
+    // module must be written out in the element itself, so one line per scene.
+    if (chosen.name === 'ring') {
+      return (
+        <Shader module="./shader-ring.ts">
+          <Svg source={chosen.svg} alt={chosen.alt} />
+        </Shader>
+      )
+    }
+    if (chosen.name === 'crab') {
+      return (
+        <Shader module="./shader-crab.ts">
+          <Svg source={chosen.svg} alt={chosen.alt} />
+        </Shader>
+      )
+    }
+    if (chosen.name === 'twinjet') {
+      return (
+        <Shader module="./shader-twinjet.ts">
+          <Svg source={chosen.svg} alt={chosen.alt} />
+        </Shader>
+      )
+    }
+    if (chosen.name === 'hourglass') {
+      return (
+        <Shader module="./shader-hourglass.ts">
+          <Svg source={chosen.svg} alt={chosen.alt} />
+        </Shader>
+      )
+    }
+    if (chosen.name === 'helix') {
+      return (
+        <Shader module="./shader-helix.ts">
+          <Svg source={chosen.svg} alt={chosen.alt} />
+        </Shader>
+      )
+    }
     return <Svg source={chosen.svg} alt={chosen.alt} isInteractive />
   })
 }
