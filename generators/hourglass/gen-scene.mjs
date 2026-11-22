@@ -58,10 +58,10 @@ const { UNDER, FIL, SPARK, count, counts, lines, PW, PH, unit } = trace(loadPixe
 // The nebula's place: the picture's centre at NEB, S scene units per photo pixel
 // (the nebula itself, 935 of the 1090 source pixels tall, comes out about 640
 // units tall).
-// (Moved 50 units left, from x 470, at the person's request; the stars were
+// (Moved 100 units left in two steps of 50, from x 470, at the person's request; the stars were
 // then left exactly where they were, so everything star-related below is still
 // worked out from STAR_C, the old centre.)
-const NEB = [420, 380]
+const NEB = [370, 380]
 const STAR_C = [470, 380]
 const S = 472 / PW
 const X0 = NEB[0] - (PW * S) / 2
